@@ -1,0 +1,59 @@
+ function conn($entropy_gain, $waktu)
+    {
+
+        $servername = "localhost";
+        $username = "username";
+        $db_password = "db_password";
+        $db_name = "db_name";
+
+        $conn = mysqli_connect($servername, $username, $db_password, $db_name);
+
+        if (!$conn) {
+
+            echo "Koneksi gagal : " . mysqli_error($conn);
+
+        } else {
+
+            $this->store($entropy_gain, $waktu, $conn);
+
+        }
+
+    }
+
+    function store($entropy_gain, $waktu, $conn)
+    {
+
+        $temp = last($entropy_gain);
+        $temp2 = reset($temp);
+        $temp3 = reset($temp2);
+        $atribut_penentu = reset($temp3);
+
+        $sub_atribut_penentu = key(last($temp3));
+
+        foreach (reset($temp) as $key => $value) {
+
+            if ($key != 0) {
+
+                $atribut = $value['atribut'];
+                $sub_atribut = key($value['entropy']);
+                $s = reset($value['entropy'])['jumlah'];
+                $y = reset($value['entropy'])['y'];
+                $n = reset($value['entropy'])['n'];
+                $entropy = reset($value['entropy'])['entropy'];
+                $gain = last($value);
+
+                $sql = "INSERT INTO history_perhitungan (atribut_penentu, sub_atribut_penentu, atribut, sub_atribut, s, y, n, entropy, gain, waktu) VALUES ('$atribut_penentu', '$sub_atribut_penentu','$atribut','$sub_atribut','$s','$y','$n','$entropy','$gain','$waktu')";
+
+                if (!mysqli_query($conn, $sql)) {
+
+                    echo "Error : " . $sql . "<br>" . mysqli_error($conn);
+
+                }
+
+            }
+
+        }
+
+        mysqli_close($conn);
+
+    }
