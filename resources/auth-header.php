@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title><?= $_SESSION["page-name"] ?> - DISPENDUK BAUMATA</title>
+<title><?= $_SESSION["page-name"] ?> - Prodi Arsitektur UNWIRA</title>
 <link rel="stylesheet" href="../assets/css/feather.css">
 <link rel="stylesheet" href="../assets/mdi/css/materialdesignicons.min.css">
 <link rel="stylesheet" href="../assets/ti-icons/css/themify-icons.css">
