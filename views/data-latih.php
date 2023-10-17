@@ -39,6 +39,31 @@ $_SESSION["page-url"] = "data-latih";
                   </ul>
                   <div>
                     <div class="btn-wrapper">
+                      <button type="button" class="btn btn-primary text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Import
+                      </button>
+                      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">File Data Latih</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="" method="post" enctype="multipart/form-data">
+                              <div class="modal-body">
+                                <div class="mb-3">
+                                  <label for="formFile" class="form-label">Masukan data kamu berupa file Excel</label>
+                                  <input name="excelFile" class="form-control" type="file" id="formFile" accept=".xlsx, .xls" required>
+                                </div>
+                              </div>
+                              <div class="modal-footer border-top-0 justify-content-center">
+                                <button type="button" class="btn btn-secondary btn-sm rounded-0" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" name="import-latih" class="btn btn-primary text-white btn-sm rounded-0">Simpan</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
                       <a href="#" class="btn btn-primary text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#tambah">Tambah</a>
                     </div>
                   </div>

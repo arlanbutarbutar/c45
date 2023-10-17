@@ -113,6 +113,76 @@ $_SESSION["page-url"] = "prediksi";
                       </div>
                     </div>
                     <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button <?php if (!isset($_SESSION['prediksi'])) {
+                                                          echo "collapsed";
+                                                        } ?>" type="button" data-bs-toggle="collapse" data-bs-target="#prediksi" aria-expanded="false" aria-controls="prediksi">
+                          Prediksi
+                        </button>
+                      </h2>
+                      <div id="prediksi" class="accordion-collapse collapse <?php if (isset($_SESSION['prediksi'])) {
+                                                                              echo "show";
+                                                                            } ?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <?php if (!isset($_SESSION['prediksi'])) { ?>
+                            <form action="" method="post">
+                              <div class="mb-3">
+                                <label for="nama" class="form-label">Nama <small class="text-danger">*</small></label>
+                                <input type="text" name="nama" value="<?php if (isset($_POST['nama'])) {
+                                                                        echo $_POST['nama'];
+                                                                      } ?>" class="form-control text-center" id="nama" placeholder="Nama" required>
+                              </div>
+                              <?php if (mysqli_num_rows($jenisKelamin2) > 0) { ?>
+                                <div class="mb-3">
+                                  <label for="id_jenis_kelamin" class="form-label">Jenis Kelamin <small class="text-danger">*</small></label>
+                                  <select name="jk" id="id_jenis_kelamin" class="form-select" aria-label="Default select example" required>
+                                    <option selected value="">Pilih Jenis Kelamin</option>
+                                    <?php while ($row_jk = mysqli_fetch_assoc($jenisKelamin2)) { ?>
+                                      <option value="<?= $row_jk['id_atribut_sub'] ?>"><?= $row_jk['atribut_sub'] ?></option>
+                                    <?php } ?>
+                                  </select>
+                                </div>
+                              <?php } ?>
+                              <div class="mb-3">
+                                <label for="nilai_ipk" class="form-label">IPK <?= $row_ipk['status_ipk'] ?> <small class="text-danger">*</small></label>
+                                <select name="ipk" id="nilai_ipk" class="form-select" aria-label="Default select example" required>
+                                  <option selected value="">Pilih IPK</option>
+                                  <option value="4">Dengan Pujian</option>
+                                  <option value="3">Sangat Memuaskan</option>
+                                  <option value="2">Memuaskan</option>
+                                  <option value="1">Cukup</option>
+                                </select>
+                              </div>
+                              <div class="mb-3">
+                                <label for="nilai_spa" class="form-label">SPA <?= $row_spa['status_spa'] ?> <small class="text-danger">*</small></label>
+                                <select name="spa" id="nilai_ipk" class="form-select" aria-label="Default select example" required>
+                                  <option selected value="">Pilih SPA</option>
+                                  <option value="4">A</option>
+                                  <option value="3">B</option>
+                                  <option value="2">C</option>
+                                  <option value="1">D</option>
+                                </select>
+                              </div>
+                              <div class="mb-3">
+                                <button type="submit" name="prediksi-checking" class="btn btn-primary btn-sm rounded-0 border-0">Submit</button>
+                              </div>
+                            </form>
+                          <?php } else if (isset($_SESSION['prediksi'])) { ?>
+                            <div class="col-lg-6">
+                              <p><strong>Nama : </strong><?= $_SESSION['prediksi']['nama'] ?></p>
+                              <p><strong>Jenis Kelamin : </strong><?= $_SESSION['prediksi']['jk'] ?></p>
+                              <p><strong>IPK : </strong><?= $_SESSION['prediksi']['ipk'] ?></p>
+                              <p><strong>SPA : </strong><?= $_SESSION['prediksi']['spa'] ?></p>
+                              <p><strong>Hasil Prediksi : <span style="font-size: 16px;"><?= $_SESSION['prediksi']['hasil_prediksi'] ?></span></strong></p>
+                              <form action="" method="post">
+                                <button type="submit" name="reload-prediksi" class="btn btn-success btn-sm border-0 rounded-0 shadow"><i class="mdi mdi-reload"></i></button>
+                              </form>
+                            </div>
+                          <?php } ?>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
                       <h2 class="accordion-header" id="headingThree">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hasil-prediksi" aria-expanded="false" aria-controls="hasil-prediksi">
                           Hasil Prediksi

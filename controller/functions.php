@@ -190,8 +190,8 @@ if (isset($_SESSION["data-user"])) {
   }
   function add_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atribut_sub, $conn)
   {
-    $sql = "INSERT INTO atribut_$tour(id_$tour,id_atribut_sub) VALUES('$id_latih','$id_atribut_sub')";
-    $result = mysqli_query($conn, $sql);
+    $sql = "INSERT INTO atribut_$tour(id_$tour,id_atribut_sub) VALUES('$id_latih','$id_atribut_sub');";
+    $result = mysqli_multi_query($conn, $sql);
     return $result;
   }
   function edit_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atribut_sub, $conn)
@@ -590,6 +590,251 @@ if (isset($_SESSION["data-user"])) {
     $id_testing = valid($data['id_testing']);
     $data_testing = "DELETE FROM data_testing WHERE id_testing='$id_testing'";
     mysqli_query($conn, $data_testing);
+    return mysqli_affected_rows($conn);
+  }
+  function predictDecisionTree($data, $decisionTree)
+  {
+    if (is_array($decisionTree) && count($decisionTree) > 0) {
+      $rootAttribute = key($decisionTree);
+      $rootValue = $data[$rootAttribute];
+
+      if (isset($decisionTree[$rootAttribute][$rootValue])) {
+        $subtree = $decisionTree[$rootAttribute][$rootValue];
+
+        // Jika sub-pohon adalah string, maka itu adalah prediksi
+        if (is_string($subtree)) {
+          return $subtree;
+        } else {
+          // Jika sub-pohon adalah array, rekursif memanggil diri sendiri
+          return predictDecisionTree($data, $subtree);
+        }
+      }
+    }
+    // Default jika tidak ada prediksi
+    return 'Tidak Lulus';
+  }
+  function prediksiKelulusan($ipk, $spa)
+  {
+    // Atur ambang batas untuk prediksi
+    $batas_ipk = 2;
+    $batas_spa = 2;
+
+    // Lakukan prediksi
+    if ($ipk >= $batas_ipk && $spa >= $batas_spa) {
+      return "Lulus Tepat";
+    } else {
+      return "Tidak Tepat";
+    }
+  }
+  function prediksi_checking($data)
+  {
+    global $conn;
+    $nama = valid($data['nama']);
+    $jk = valid($data['jk']);
+    $ipk = valid($data['ipk']);
+    $spa = valid($data['spa']);
+
+    // Menentukan predikat ipk
+    if (round($jk, 0) == 1) {
+      $status_jk = "Laki-Laki";
+    } else if (round($jk, 0) == 2) {
+      $status_jk = "Perempuan";
+    }
+
+    // Menentukan predikat ipk
+    if (round($ipk, 0) <= 1) {
+      $status_ipk = "Cukup";
+    } else if (round($ipk, 0) == 2) {
+      $status_ipk = "Memuaskan";
+    } else if (round($ipk, 0) == 3) {
+      $status_ipk = "Sangat Memuaskan";
+    } else if (round($ipk, 0) >= 4) {
+      $status_ipk = "Dengan Pujian";
+    }
+
+    // Menentukan predikat ipk
+    if (round($spa, 0) <= 1) {
+      $status_spa = "D";
+    } else if (round($spa, 0) == 2) {
+      $status_spa = "C";
+    } else if (round($spa, 0) == 3) {
+      $status_spa = "B";
+    } else if (round($spa, 0) >= 4) {
+      $status_spa = "A";
+    }
+
+    // Panggil fungsi prediksiKelulusan
+    $hasil_prediksi = prediksiKelulusan($ipk, $spa);
+    $_SESSION['prediksi'] = [
+      'nama' => $nama,
+      'jk' => $status_jk,
+      'ipk' => $status_ipk,
+      'spa' => $status_spa,
+      'hasil_prediksi' => $hasil_prediksi,
+    ];
+    return mysqli_affected_rows($conn);
+  }
+  function getLastIdLatih($conn)
+  {
+    $data_latih = "SELECT * FROM data_latih ORDER BY id_latih DESC LIMIT 1";
+    $checkID = mysqli_query($conn, $data_latih);
+    if (mysqli_num_rows($checkID) > 0) {
+      $rowCheck = mysqli_fetch_assoc($checkID);
+      $id_latih = $rowCheck['id_latih'] + 1;
+    } else {
+      $id_latih = 1;
+    }
+    return $id_latih;
+  }
+  function getNilai($worksheet, $row, $startCol, $endCol)
+  {
+    $nilai = [];
+
+    for ($col = $startCol; $col <= $endCol; $col++) {
+      $nilai[] = valid($worksheet->getCellByColumnAndRow($col, $row)->getValue());
+    }
+
+    return $nilai;
+  }
+  function getPredikatIPK($nilai_rata_rata_ipk)
+  {
+    if ($nilai_rata_rata_ipk <= 1) {
+      return "Cukup";
+    } elseif ($nilai_rata_rata_ipk == 2) {
+      return "Memuaskan";
+    } elseif ($nilai_rata_rata_ipk == 3) {
+      return "Sangat Memuaskan";
+    } elseif ($nilai_rata_rata_ipk >= 4) {
+      return "Dengan Pujian";
+    }
+
+    return "Tidak Diketahui"; // Predikat tidak ditemukan
+  }
+  function getPredikatSPA($nilai_rata_rata_spa)
+  {
+    if ($nilai_rata_rata_spa <= 1) {
+      return "D";
+    } elseif ($nilai_rata_rata_spa == 2) {
+      return "C";
+    } elseif ($nilai_rata_rata_spa == 3) {
+      return "B";
+    } elseif ($nilai_rata_rata_spa >= 4) {
+      return "A";
+    }
+
+    return "Tidak Diketahui"; // Predikat tidak ditemukan
+  }
+  function getPrediksi($nilai_rata_rata)
+  {
+    if ($nilai_rata_rata < 2) {
+      return "Tidak Tepat";
+    } elseif ($nilai_rata_rata >= 2) {
+      return "Lulus Tepat";
+    }
+
+    return "Tidak Diketahui"; // Prediksi tidak ditemukan
+  }
+  function import_atribut_sub_jenis_kelamin($tour, $id_latih, $id_jenis_kelamin, $conn)
+  {
+    $sql = "INSERT INTO atribut_$tour(id_$tour, id_atribut_sub) VALUES('$id_latih', '$id_jenis_kelamin')";
+    $result = mysqli_query($conn, $sql);
+    return $result;
+  }
+  function import_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn)
+  {
+    $id_atribut_sub = getIdAtributSub($conn, $atribut_sub);
+
+    if ($id_atribut_sub !== null) {
+      $sql = "INSERT INTO atribut_$tour(id_$tour, id_atribut_sub) VALUES('$id_latih', '$id_atribut_sub')";
+      $result = mysqli_query($conn, $sql);
+      return $result;
+    }
+
+    return false;
+  }
+  function getIdAtributSub($conn, $atribut_sub)
+  {
+    $checkAtributSub = "SELECT id_atribut_sub FROM atribut_sub WHERE atribut_sub='$atribut_sub'";
+    $queryAtributSub = mysqli_query($conn, $checkAtributSub);
+
+    if (mysqli_num_rows($queryAtributSub) > 0) {
+      $row = mysqli_fetch_assoc($queryAtributSub);
+      return $row['id_atribut_sub'];
+    }
+
+    return null;
+  }
+  function import_latih($filename)
+  {
+    global $conn;
+    $tour = "latih";
+
+    // Hapus data latih sebelum mengimpor yang baru
+    $sql = "DELETE FROM data_latih";
+    mysqli_query($conn, $sql);
+
+    require '../assets/vendor/autoload.php';
+
+    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filename);
+    $worksheet = $spreadsheet->getActiveSheet();
+    $highestRow = $worksheet->getHighestRow();
+
+    // Loop through each row in the Excel file
+    for ($row = 2; $row <= $highestRow; $row++) {
+      // Mengambil ID terakhir dan menambahkannya
+      $id_latih = getLastIdLatih($conn) + 1;
+
+      $nim = valid($worksheet->getCellByColumnAndRow(1, $row)->getValue());
+      $nama = valid($worksheet->getCellByColumnAndRow(2, $row)->getValue());
+      $id_jenis_kelamin = valid($worksheet->getCellByColumnAndRow(3, $row)->getValue());
+
+      // Mengambil nilai IPK dan SPA dari sel-sel yang sesuai
+      $nilai_ipk = getNilai($worksheet, $row, 4, 7);
+      $nilai_spa = getNilai($worksheet, $row, 8, 13);
+
+      // Menghitung nilai rata-rata IPK dan SPA
+      $nilai_rata_rata_ipk = hitungRataRata($nilai_ipk);
+      $nilai_rata_rata_spa = hitungRataRata($nilai_spa);
+
+      // Menghitung nilai rata-rata gabungan IPK dan SPA
+      $nilai_gabungan = array_merge($nilai_ipk, $nilai_spa);
+      $nilai_rata_rata = hitungRataRata($nilai_gabungan);
+
+      // Memasukkan data latih ke database
+      mysqli_query($conn, "INSERT INTO data_latih(id_latih, nim, nama, nilai_rata_rata_ipk, nilai_rata_rata_spa, nilai_rata_rata) VALUES ('$id_latih', '$nim', '$nama', '$nilai_rata_rata_ipk', '$nilai_rata_rata_spa', '$nilai_rata_rata')");
+
+      // Menentukan jenis kelamin
+      import_atribut_sub_jenis_kelamin($tour, $id_latih, $id_jenis_kelamin, $conn);
+
+      // Menentukan predikat IPK
+      $predikat_ipk = getPredikatIPK($nilai_rata_rata_ipk);
+      import_atribut_sub_other($tour, $id_latih, $predikat_ipk, $conn);
+
+      // Menentukan predikat SPA
+      $predikat_spa = getPredikatSPA($nilai_rata_rata_spa);
+      import_atribut_sub_other($tour, $id_latih, $predikat_spa, $conn);
+
+      // Menentukan prediksi
+      $prediksi = getPrediksi($nilai_rata_rata);
+      import_atribut_sub_other($tour, $id_latih, $prediksi, $conn);
+
+      // menginput IPK dari data latih
+      for ($ipk = 0; $ipk < count($nilai_ipk); $ipk++) {
+        if (!empty($nilai_ipk[$ipk])) {
+          $insert_ipk = "INSERT INTO ipk_latih (id_latih, id_status_ipk, nilai_ipk) VALUES ('$id_latih', '$ipk', '{$nilai_ipk[$ipk]}')";
+          mysqli_query($conn, $insert_ipk);
+        }
+      }
+
+      // menginput SPA dari data latih
+      for ($spa = 0; $spa < count($nilai_spa); $spa++) {
+        if (!empty($nilai_spa[$spa])) {
+          $insert_spa = "INSERT INTO spa_latih (id_latih, id_status_spa, nilai_spa) VALUES ('$id_latih', '$spa', '{$nilai_spa[$spa]}')";
+          mysqli_query($conn, $insert_spa);
+        }
+      }
+    }
+
     return mysqli_affected_rows($conn);
   }
 }

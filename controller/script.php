@@ -148,6 +148,25 @@ if (isset($_SESSION["data-user"])) {
   $statusSPA = mysqli_query($conn, $status_spa);
 
   $data_latih = mysqli_query($conn, "SELECT * FROM data_latih");
+  if (isset($_POST["import-latih"])) {
+    $targetDir = "../assets/document/data-latih/";
+    $targetFile = $targetDir . basename($_FILES["excelFile"]["name"]);
+    $fileType = pathinfo($targetFile, PATHINFO_EXTENSION);
+    if ($fileType != "xlsx" && $fileType != "xls") {
+      $_SESSION["message-success"] = "Hanya file Excel yang diizinkan.";
+      $_SESSION["time-message"] = time();
+      header("Location: " . $_SESSION["page-url"]);
+      exit();
+    }
+    if (move_uploaded_file($_FILES["excelFile"]["tmp_name"], $targetFile)) {
+      if (import_latih($targetFile) > 0) {
+        $_SESSION["message-success"] = "Data latih berhasil ditambahkan.";
+        $_SESSION["time-message"] = time();
+        header("Location: " . $_SESSION["page-url"]);
+        exit();
+      }
+    }
+  }
   if (isset($_POST["tambah-latih"])) {
     if (add_latih($_POST) > 0) {
       $_SESSION["message-success"] = "Data latih berhasil ditambahkan.";
@@ -200,4 +219,18 @@ if (isset($_SESSION["data-user"])) {
   }
 
   $data_prediksi = mysqli_query($conn, "SELECT * FROM atribut_testing INNER JOIN atribut_sub ON atribut_testing.id_atribut_sub=atribut_sub.id_atribut_sub INNER JOIN atribut ON atribut_sub.id_atribut=atribut.id_atribut");
+
+  if (isset($_POST["prediksi-checking"])) {
+    if (prediksi_checking($_POST) > 0) {
+      $_SESSION["message-success"] = "Data berhasil diprediksi.";
+      $_SESSION["time-message"] = time();
+      header("Location: " . $_SESSION["page-url"]);
+      exit();
+    }
+  }
+  if (isset($_POST["reload-prediksi"])) {
+    unset($_SESSION['prediksi']);
+    header("Location: " . $_SESSION["page-url"]);
+    exit();
+  }
 }
