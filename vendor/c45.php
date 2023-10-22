@@ -345,32 +345,9 @@ class c45
 
       $i++;
     }
-    $this->store($entropy_gain);
 
+    dd($entropy_gain);
     return $entropy_gain;
-  }
-
-  public function display($tree)
-  {
-    echo "<ul class='c45_tree'><li><a href='javascript:void(0)' class='btn btn-xs btn-danger'>Root</a></li>";
-    $this->_display($tree);
-    echo "</ul>";
-  }
-
-  public function _display($tree)
-  {
-    echo "<ul>";
-    foreach ($tree['atribut'] as $key => $val) {
-      echo "<li><a href='javascript:void(0)' class='btn btn-xs btn-primary'> IF <b>$tree[entropy]</b> Is <b>$key</b> THEN";
-
-      if (!$val['next'])
-        echo " <b>$val[gain]</b>";
-      echo "</a>";
-
-      $this->_display($val);
-      echo '</li>';
-    }
-    echo "</ul>";
   }
 
   function value_atribut_terpilih_baru($atribut_terpilih, $key_atribut_terpilih, $atribut_penentu, $sub_atribut_tertinggi, $atribut_penentu_awal, $key_penentu, $data_uji, $attr_key = null, $sub_attr_key = null, $attr_sub_attr_key2 = null)
@@ -637,9 +614,8 @@ class c45
     return $gain;
   }
 
-  function store($entropy_gain)
+  function store($entropy_gain, $waktu, $conn)
   {
-    $conn = $this->conn;
 
     $temp = end($entropy_gain);
     $temp2 = reset($temp);
@@ -660,7 +636,7 @@ class c45
         $entropy = reset($value['entropy'])['entropy'];
         $gain = end($value);
 
-        $sql = "INSERT INTO histori_perhitungan (atribut_penentu, sub_atribut_penentu, atribut, sub_atribut, s, y, n, entropy, gain) VALUES ('$atribut_penentu', '$sub_atribut_penentu','$atribut','$sub_atribut','$s','$y','$n','$entropy','$gain')";
+        $sql = "INSERT INTO history_perhitungan (atribut_penentu, sub_atribut_penentu, atribut, sub_atribut, s, y, n, entropy, gain, waktu) VALUES ('$atribut_penentu', '$sub_atribut_penentu','$atribut','$sub_atribut','$s','$y','$n','$entropy','$gain','$waktu')";
 
         if (!mysqli_query($conn, $sql)) {
 
@@ -672,3 +648,8 @@ class c45
     mysqli_close($conn);
   }
 }
+// Menggunakan class C45
+$c45 = new C45();
+
+$result = $c45->entropy_gain();
+echo "Entropy: " . $result . "<br>";

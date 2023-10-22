@@ -734,18 +734,18 @@ if (isset($_SESSION["data-user"])) {
 
     return "Tidak Diketahui"; // Prediksi tidak ditemukan
   }
-  function import_atribut_sub_jenis_kelamin($tour, $id_latih, $id_jenis_kelamin, $conn)
+  function import_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atr,  $id_jenis_kelamin, $conn)
   {
-    $sql = "INSERT INTO atribut_$tour(id_$tour, id_atribut_sub) VALUES('$id_latih', '$id_jenis_kelamin')";
+    $sql = "INSERT INTO atribut_$tour(id_$tour, id_atribut, id_atribut_sub) VALUES('$id_latih', '$id_atr', '$id_jenis_kelamin')";
     $result = mysqli_query($conn, $sql);
     return $result;
   }
-  function import_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn)
+  function import_atribut_sub_other($tour, $id_latih, $id_atr, $atribut_sub, $conn)
   {
     $id_atribut_sub = getIdAtributSub($conn, $atribut_sub);
 
     if ($id_atribut_sub !== null) {
-      $sql = "INSERT INTO atribut_$tour(id_$tour, id_atribut_sub) VALUES('$id_latih', '$id_atribut_sub')";
+      $sql = "INSERT INTO atribut_$tour(id_$tour, id_atribut, id_atribut_sub) VALUES('$id_latih', '$id_atr', '$id_atribut_sub')";
       $result = mysqli_query($conn, $sql);
       return $result;
     }
@@ -769,10 +769,6 @@ if (isset($_SESSION["data-user"])) {
     global $conn;
     $tour = "latih";
 
-    // Hapus data latih sebelum mengimpor yang baru
-    $sql = "DELETE FROM data_latih";
-    mysqli_query($conn, $sql);
-
     require '../assets/vendor/autoload.php';
 
     $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filename);
@@ -780,7 +776,7 @@ if (isset($_SESSION["data-user"])) {
     $highestRow = $worksheet->getHighestRow();
 
     // Loop through each row in the Excel file
-    for ($row = 2; $row <= $highestRow; $row++) {
+    for ($row = 1; $row <= $highestRow; $row++) {
       // Mengambil ID terakhir dan menambahkannya
       $id_latih = getLastIdLatih($conn) + 1;
 
@@ -818,21 +814,28 @@ if (isset($_SESSION["data-user"])) {
       }
 
       // Menentukan jenis kelamin
-      import_atribut_sub_jenis_kelamin($tour, $id_latih, $id_jenis_kelamin, $conn);
+      import_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atr = 1, $id_jenis_kelamin, $conn);
 
       // Menentukan predikat IPK
       $predikat_ipk = getPredikatIPK($nilai_rata_rata);
-      import_atribut_sub_other($tour, $id_latih, $predikat_ipk, $conn);
+      import_atribut_sub_other($tour, $id_latih, $id_atr = 2,  $predikat_ipk, $conn);
 
       // Menentukan predikat SPA
       $predikat_spa = getPredikatSPA($nilai_rata_rata);
-      import_atribut_sub_other($tour, $id_latih, $predikat_spa, $conn);
+      import_atribut_sub_other($tour, $id_latih, $id_atr = 3,  $predikat_spa, $conn);
 
       // Menentukan prediksi
       $prediksi = getPrediksi($nilai_rata_rata);
-      import_atribut_sub_other($tour, $id_latih, $prediksi, $conn);
+      import_atribut_sub_other($tour, $id_latih, $id_atr = 4,  $prediksi, $conn);
     }
 
+    return mysqli_affected_rows($conn);
+  }
+  function delete_all_latih($data)
+  {
+    global $conn;
+    $sql = "DELETE FROM data_latih";
+    mysqli_query($conn, $sql);
     return mysqli_affected_rows($conn);
   }
 }

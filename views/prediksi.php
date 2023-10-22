@@ -42,6 +42,7 @@ $_SESSION["page-url"] = "prediksi";
                 </div>
                 <div class="data-main">
                   <div class="accordion mt-3" id="accordionExample">
+
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perhitungan" aria-expanded="false" aria-controls="perhitungan">
@@ -52,38 +53,29 @@ $_SESSION["page-url"] = "prediksi";
                         <div class="accordion-body">
                           <pre>
                             <?php
-                            $put_atribut = "SELECT * FROM atribut";
-                            $putAtribut = mysqli_query($conn, $put_atribut);
-                            $data_arrayAtribut = array();
-                            foreach ($putAtribut as $row_put_atribut) {
-                              $data_arrayAtribut[] = $row_put_atribut['atribut'];
-                            }
-
-                            $data_atribut_latih = "SELECT atribut_latih.*, atribut_sub.atribut_sub FROM atribut_latih JOIN atribut_sub ON atribut_latih.id_atribut_sub=atribut_sub.id_atribut_sub";
-                            $dataAtributLatih = mysqli_query($conn, $data_atribut_latih);
-                            $data_arrayAtributLatih = array();
-                            foreach ($dataAtributLatih as $row_atribut_latih) {
-                              $data_arrayAtributLatih[$row_atribut_latih['id_latih']][] = $row_atribut_latih['atribut_sub'];
-                            }
-
-                            $query = "SELECT * FROM data_latih";
-                            $result = mysqli_query($conn, $query);
+                            $query = "SELECT * FROM atribut_latih INNER JOIN atribut ON atribut_latih.id_atribut=atribut.id_atribut INNER JOIN atribut_sub ON atribut_latih.id_atribut_sub=atribut_sub.id_atribut_sub ORDER BY atribut_latih.id_latih, atribut.id_atribut";
+                            $dataset = mysqli_query($conn, $query);
                             $data = array();
-                            while ($row_latih = mysqli_fetch_assoc($result)) {
-                              $data[] = array(
-                                $data_arrayAtribut[0] => $data_arrayAtributLatih[$row_latih['id_latih']][0],
-                                $data_arrayAtribut[1] => $data_arrayAtributLatih[$row_latih['id_latih']][1],
-                                $data_arrayAtribut[2] => $data_arrayAtributLatih[$row_latih['id_latih']][2],
-                                $data_arrayAtribut[3] => $data_arrayAtributLatih[$row_latih['id_latih']][3]
-                              );
+                            foreach ($dataset as $row_latih) {
+                              $data[$row_latih['id_latih']][$row_latih['atribut']] = $row_latih['atribut_sub'];
+                            }
+                            $data = array_values($data);
+
+                            function get_atribut($atribute)
+                            {
+                              $rows = $atribute;
+                              foreach ($rows as $row) {
+                                $ATRIBUT[$row['id_atribut']] = $row['atribut'];
+                              }
+
+                              end($ATRIBUT);
+                              reset($ATRIBUT);
+                              return $ATRIBUT;
                             }
 
                             $atribut_data = "SELECT * FROM atribut";
                             $atributData = mysqli_query($conn, $atribut_data);
-                            $atribut = array();
-                            while ($row_atribut = mysqli_fetch_assoc($atributData)) {
-                              $atribut[] = $row_atribut['atribut'];
-                            }
+                            $atribut = get_atribut($atributData);
 
                             $last_atribut = "SELECT * FROM atribut ORDER BY id_atribut DESC LIMIT 1";
                             $lastAtribut = mysqli_query($conn, $last_atribut);
@@ -96,6 +88,7 @@ $_SESSION["page-url"] = "prediksi";
                         </div>
                       </div>
                     </div>
+
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#decision-tree" aria-expanded="false" aria-controls="decision-tree">
@@ -112,6 +105,7 @@ $_SESSION["page-url"] = "prediksi";
                         </div>
                       </div>
                     </div>
+
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
                         <button class="accordion-button <?php if (!isset($_SESSION['prediksi'])) {
@@ -182,6 +176,7 @@ $_SESSION["page-url"] = "prediksi";
                         </div>
                       </div>
                     </div>
+                    
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingThree">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hasil-prediksi" aria-expanded="false" aria-controls="hasil-prediksi">

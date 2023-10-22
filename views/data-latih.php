@@ -39,10 +39,10 @@ $_SESSION["page-url"] = "data-latih";
                   </ul>
                   <div>
                     <div class="btn-wrapper">
-                      <button type="button" class="btn btn-primary text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      <button type="button" class="btn btn-success text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#import">
                         Import
                       </button>
-                      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="import" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">
@@ -58,13 +58,35 @@ $_SESSION["page-url"] = "data-latih";
                               </div>
                               <div class="modal-footer border-top-0 justify-content-center">
                                 <button type="button" class="btn btn-secondary btn-sm rounded-0" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" name="import-latih" class="btn btn-primary text-white btn-sm rounded-0">Simpan</button>
+                                <button type="submit" name="import-latih" class="btn btn-success text-white btn-sm rounded-0">Simpan</button>
                               </div>
                             </form>
                           </div>
                         </div>
                       </div>
                       <a href="#" class="btn btn-primary text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#tambah">Tambah</a>
+                      <button type="button" class="btn btn-danger text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#delete-all">
+                        Hapus Semua
+                      </button>
+                      <div class="modal fade" id="delete-all" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel"></h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="" method="post" enctype="multipart/form-data">
+                              <div class="modal-body">
+                                <p class="text-center">Apakah anda yakin ingin menghapus semua data Latih?</p>
+                              </div>
+                              <div class="modal-footer border-top-0 justify-content-center">
+                                <button type="button" class="btn btn-secondary btn-sm rounded-0" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" name="delete-all-latih" class="btn btn-danger text-white btn-sm rounded-0">Hapus Semua</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

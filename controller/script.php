@@ -233,4 +233,13 @@ if (isset($_SESSION["data-user"])) {
     header("Location: " . $_SESSION["page-url"]);
     exit();
   }
+
+  if (isset($_POST["delete-all-latih"])) {
+    if (delete_all_latih($_POST) > 0) {
+      $_SESSION["message-success"] = "Semua data latih mahasiswa berhasil dihapus.";
+      $_SESSION["time-message"] = time();
+      header("Location: " . $_SESSION["page-url"]);
+      exit();
+    }
+  }
 }
