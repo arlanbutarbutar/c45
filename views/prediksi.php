@@ -121,6 +121,12 @@ $_SESSION["page-url"] = "prediksi";
                           <?php if (!isset($_SESSION['prediksi'])) { ?>
                             <form action="" method="post">
                               <div class="mb-3">
+                                <label for="nim" class="form-label">NIM <small class="text-danger">*</small></label>
+                                <input type="number" name="nim" value="<?php if (isset($_POST['nim'])) {
+                                                                          echo $_POST['nim'];
+                                                                        } ?>" class="form-control text-center" id="nim" minlength="3" placeholder="NIM" required>
+                              </div>
+                              <div class="mb-3">
                                 <label for="nama" class="form-label">Nama <small class="text-danger">*</small></label>
                                 <input type="text" name="nama" value="<?php if (isset($_POST['nama'])) {
                                                                         echo $_POST['nama'];
@@ -129,34 +135,34 @@ $_SESSION["page-url"] = "prediksi";
                               <?php if (mysqli_num_rows($jenisKelamin2) > 0) { ?>
                                 <div class="mb-3">
                                   <label for="id_jenis_kelamin" class="form-label">Jenis Kelamin <small class="text-danger">*</small></label>
-                                  <select name="jk" id="id_jenis_kelamin" class="form-select" aria-label="Default select example" required>
+                                  <select name="id_jenis_kelamin" id="id_jenis_kelamin" class="form-select" aria-label="Default select example" required>
                                     <option selected value="">Pilih Jenis Kelamin</option>
                                     <?php while ($row_jk = mysqli_fetch_assoc($jenisKelamin2)) { ?>
                                       <option value="<?= $row_jk['id_atribut_sub'] ?>"><?= $row_jk['atribut_sub'] ?></option>
                                     <?php } ?>
                                   </select>
                                 </div>
-                              <?php } ?>
-                              <div class="mb-3">
-                                <label for="nilai_ipk" class="form-label">IPK <?= $row_ipk['status_ipk'] ?> <small class="text-danger">*</small></label>
-                                <select name="ipk" id="nilai_ipk" class="form-select" aria-label="Default select example" required>
-                                  <option selected value="">Pilih IPK</option>
-                                  <option value="4">Dengan Pujian</option>
-                                  <option value="3">Sangat Memuaskan</option>
-                                  <option value="2">Memuaskan</option>
-                                  <option value="1">Cukup</option>
-                                </select>
-                              </div>
-                              <div class="mb-3">
-                                <label for="nilai_spa" class="form-label">SPA <?= $row_spa['status_spa'] ?> <small class="text-danger">*</small></label>
-                                <select name="spa" id="nilai_ipk" class="form-select" aria-label="Default select example" required>
-                                  <option selected value="">Pilih SPA</option>
-                                  <option value="4">A</option>
-                                  <option value="3">B</option>
-                                  <option value="2">C</option>
-                                  <option value="1">D</option>
-                                </select>
-                              </div>
+                              <?php }
+                              foreach ($statusIPK as $key_ipk => $row_ipk) : ?>
+                                <div class="mb-3">
+                                  <label for="nilai_ipk" class="form-label">Nilai IPK <?= $row_ipk['status_ipk'] ?> <small class="text-danger">*</small></label>
+                                  <input type="number" step="0.01" min="0" name="nilai_ipk[]" value="<?php if (isset($_POST['nilai_ipk'][$key_ipk])) {
+                                                                                                        echo $_POST['nilai_ipk'][$key_ipk];
+                                                                                                      } else {
+                                                                                                        echo 0;
+                                                                                                      } ?>" class="form-control text-center" id="nilai_ipk" placeholder="Nilai IPK <?= $row_ipk['status_ipk'] ?>" required>
+                                </div>
+                              <?php endforeach;
+                              foreach ($statusSPA as $key_spa => $row_spa) : ?>
+                                <div class="mb-3">
+                                  <label for="nilai_spa" class="form-label">Nilai SPA <?= $row_spa['status_spa'] ?> <small class="text-danger">*</small></label>
+                                  <input type="number" step="0.01" min="0" name="nilai_spa[]" value="<?php if (isset($_POST['nilai_spa'][$key_spa])) {
+                                                                                                        echo $_POST['nilai_spa'][$key_spa];
+                                                                                                      } else {
+                                                                                                        echo 0;
+                                                                                                      } ?>" class="form-control text-center" id="nilai_spa" placeholder="Nilai SPA <?= $row_spa['status_spa'] ?>" required>
+                                </div>
+                              <?php endforeach; ?>
                               <div class="mb-3">
                                 <button type="submit" name="prediksi-checking" class="btn btn-primary btn-sm rounded-0 border-0">Submit</button>
                               </div>
@@ -176,7 +182,7 @@ $_SESSION["page-url"] = "prediksi";
                         </div>
                       </div>
                     </div>
-                    
+
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingThree">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hasil-prediksi" aria-expanded="false" aria-controls="hasil-prediksi">
@@ -189,34 +195,129 @@ $_SESSION["page-url"] = "prediksi";
                             <thead>
                               <tr>
                                 <th scope="col" class="text-center">#</th>
+                                <th scope="col" class="text-center">Nama</th>
                                 <?php foreach ($atributs as $key => $val) : ?>
-                                  <th scope="col" class="text-center"><?= str_replace("_", " ", $val['atribut']) ?></th>
+                                  <th scope="col" class="text-center" rowspan="2"><?= str_replace("_", " ", $val['atribut']) ?></th>
                                 <?php endforeach; ?>
                               </tr>
                             </thead>
                             <tbody>
-                              <?php
-                              $testings = array();
-                              foreach ($data_prediksi as $row) {
-                                $testings[$row['id_testing']][$row['atribut']] = $row['atribut_sub'];
-                              }
-                              $testings = array_values($testings);
-                              ?>
-                              <?php $no = 1;
-                              foreach ($testings as $key => $val) : ?>
-                                <tr>
-                                  <td><?= $no++ ?></td>
-                                  <?php foreach ($val as $k => $v) : ?>
-                                    <td><?= $v ?></td>
-                                  <?php endforeach ?>
-                                  <td><?= $c45->predict($val) ?></td>
-                                </tr>
-                              <?php endforeach; ?>
+                              <?php $data_prediksi = mysqli_query($conn, "SELECT * FROM data_testing ORDER BY id_testing DESC");
+                              if (mysqli_num_rows($data_prediksi) > 0) {
+                                $no = 1;
+                                while ($row = mysqli_fetch_assoc($data_prediksi)) {
+                                  $id_testing = $row['id_testing']; ?>
+                                  <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td><?= $row["nama"] ?></td>
+                                    <?php $atribut_sub_view = "SELECT atribut_sub.atribut_sub FROM atribut_testing JOIN atribut_sub ON atribut_testing.id_atribut_sub=atribut_sub.id_atribut_sub WHERE atribut_testing.id_testing='$id_testing' ORDER BY atribut_testing.id_testing DESC";
+                                    $atributSubView = mysqli_query($conn, $atribut_sub_view);
+                                    foreach ($atributSubView as $row_atribut_sub_view) :
+                                      $atribut_sub = $row_atribut_sub_view['atribut_sub']; ?>
+                                      <td><?= $atribut_sub ?></td>
+                                    <?php endforeach; ?>
+                                  </tr>
+                              <?php }
+                              } ?>
                             </tbody>
                           </table>
                         </div>
                       </div>
                     </div>
+
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hasil-akurasi" aria-expanded="false" aria-controls="hasil-akurasi">
+                          Hasil Akurasi
+                        </button>
+                      </h2>
+                      <div id="hasil-akurasi" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                        <div class="accordion-body table-responsive">
+                          <!-- Start => Perhitungan akurasi -->
+                          <?php
+                          $data_tp = mysqli_query($conn, "SELECT * FROM atribut_sub 
+                                                                    JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
+                                                                    JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
+                                                                    WHERE atribut_sub.atribut_sub='Lulus Tepat'
+                                                          ");
+                          $tp = mysqli_num_rows($data_tp);
+                          $data_tn = mysqli_query($conn, "SELECT * FROM atribut_sub 
+                                                                    JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
+                                                                    JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
+                                                                    WHERE atribut_sub.atribut_sub='Tidak Tepat'
+                                                          ");
+                          $tn = mysqli_num_rows($data_tn);
+                          $data_fp = mysqli_query($conn, "SELECT * FROM atribut_sub 
+                                                                    JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
+                                                                    JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
+                                                                    WHERE atribut_sub.atribut_sub='Lulus Tepat'
+                                                                    AND atribut_sub.atribut_sub='D'
+                                                          ");
+                          $fp = mysqli_num_rows($data_fp);
+                          $data_fn = mysqli_query($conn, "SELECT * FROM atribut_sub 
+                                                                    JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
+                                                                    JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
+                                                                    WHERE atribut_sub.atribut_sub='Tidak Tepat'
+                                                                    AND atribut_sub.atribut_sub!='D'
+                                                          ");
+                          $fn = mysqli_num_rows($data_fn);
+
+                          $akurasi = ($tp + $tn) / ($tp + $tn + $fp + $fn) * 100;
+                          $presisi = ($tp / ($fp + $tp)) * 100;
+                          $recall = ($tp / ($fn + $tp)) * 100;
+
+                          echo "<strong>Akurasi:</strong> <br>(TP + TN) / (TP + TN + FP + FN) x 100% <br>";
+                          echo "(" . $tp . " + " . $tn . ") / (" . $tp . " + " . $tn . " + " . $fp . " + " . $fn . ") x 100% <br>";
+                          echo "Hasil akurasi: $akurasi <br>";
+                          echo "<strong>Presisi:</strong> <br>(TP / (FP + TP)) x 100% <br>";
+                          echo "(" . $tp . " / (" . $fp . " + " . $tp . ")) x 100% <br>";
+                          echo "Hasil presisi: $presisi <br>";
+                          echo "<strong>Recall:</strong> <br>(TP / (FN + TP)) x 100% <br>";
+                          echo "(" . $tp . " / (" . $fn . " + " . $tp . ")) x 100% <br>";
+                          echo "Hasil recall: $recall <br>";
+                          echo "<br>";
+                          echo "<strong>Keterangan:</strong> <br>";
+                          echo "True Positif(TP)=> Lulus tepat waktu <br>";
+                          echo "True Negatif(TN)=> Tidak lulus tepat waktu <br>";
+                          echo "False Positive(FP)=> Mahasiswa diprediksi lulus tepat, ternyata tidak tepat prediksi salah(false) <br>";
+                          echo "False Negatif(FN)=> Mahasiswa tidak lulus tepat waktu, tapi ternyata lulus(true) prediksi salah (false) <br>";
+                          echo "<br>";
+                          ?>
+                          <!-- End => Perhitungan akurasi -->
+                          <table class="table table-bordered table-striped table-hover table-sm display" id="datatable">
+                            <thead>
+                              <tr>
+                                <th scope="col" class="text-center">#</th>
+                                <th scope="col" class="text-center">Nama</th>
+                                <?php foreach ($atributs as $key => $val) : ?>
+                                  <th scope="col" class="text-center" rowspan="2"><?= str_replace("_", " ", $val['atribut']) ?></th>
+                                <?php endforeach; ?>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php $data_prediksi = mysqli_query($conn, "SELECT * FROM data_testing ORDER BY id_testing DESC");
+                              if (mysqli_num_rows($data_prediksi) > 0) {
+                                $no = 1;
+                                while ($row = mysqli_fetch_assoc($data_prediksi)) {
+                                  $id_testing = $row['id_testing']; ?>
+                                  <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td><?= $row["nama"] ?></td>
+                                    <?php $atribut_sub_view = "SELECT atribut_sub.atribut_sub FROM atribut_testing JOIN atribut_sub ON atribut_testing.id_atribut_sub=atribut_sub.id_atribut_sub WHERE atribut_testing.id_testing='$id_testing' ORDER BY atribut_testing.id_testing DESC";
+                                    $atributSubView = mysqli_query($conn, $atribut_sub_view);
+                                    foreach ($atributSubView as $row_atribut_sub_view) :
+                                      $atribut_sub = $row_atribut_sub_view['atribut_sub']; ?>
+                                      <td><?= $atribut_sub ?></td>
+                                    <?php endforeach; ?>
+                                  </tr>
+                              <?php }
+                              } ?>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>

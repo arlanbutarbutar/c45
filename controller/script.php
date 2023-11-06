@@ -147,7 +147,7 @@ if (isset($_SESSION["data-user"])) {
   $status_spa = "SELECT * FROM status_spa";
   $statusSPA = mysqli_query($conn, $status_spa);
 
-  $data_latih = mysqli_query($conn, "SELECT * FROM data_latih");
+  $data_latih = mysqli_query($conn, "SELECT * FROM data_latih LIMIT 500");
   if (isset($_POST["import-latih"])) {
     $targetDir = "../assets/document/data-latih/";
     $targetFile = $targetDir . basename($_FILES["excelFile"]["name"]);
@@ -193,14 +193,6 @@ if (isset($_SESSION["data-user"])) {
   }
 
   $data_testing = mysqli_query($conn, "SELECT * FROM data_testing");
-  if (isset($_POST["tambah-testing"])) {
-    if (add_testing($_POST) > 0) {
-      $_SESSION["message-success"] = "Data predict berhasil ditambahkan.";
-      $_SESSION["time-message"] = time();
-      header("Location: " . $_SESSION["page-url"]);
-      exit();
-    }
-  }
   if (isset($_POST["ubah-testing"])) {
     if (edit_testing($_POST) > 0) {
       $_SESSION["message-success"] = "Data predict berhasil diubah.";

@@ -37,11 +37,11 @@ $_SESSION["page-url"] = "data-testing";
                       <h3>Data Predict</h3>
                     </li>
                   </ul>
-                  <div>
+                  <!-- <div>
                     <div class="btn-wrapper">
                       <a href="#" class="btn btn-primary text-white me-0 btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#tambah">Tambah</a>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="data-main">
                   <div class="card rounded-0 mt-3">
@@ -102,13 +102,9 @@ $_SESSION["page-url"] = "data-testing";
                                 <?php $atribut_sub_view = "SELECT atribut_sub.atribut_sub FROM atribut_testing JOIN atribut_sub ON atribut_testing.id_atribut_sub=atribut_sub.id_atribut_sub WHERE atribut_testing.id_testing='$id_testing'";
                                 $atributSubView = mysqli_query($conn, $atribut_sub_view);
                                 foreach ($atributSubView as $row_atribut_sub_view) :
-                                  $atribut_sub = $row_atribut_sub_view['atribut_sub'];
-                                  if ($atribut_sub == "Lulus Tepat" || $atribut_sub == "Tidak Tepat") {
-                                    $atribut_sub = "";
-                                  } ?>
+                                  $atribut_sub = $row_atribut_sub_view['atribut_sub']; ?>
                                   <td><?= $atribut_sub ?></td>
                                 <?php endforeach; ?>
-                                <td></td>
                                 <td class="d-flex justify-content-center">
                                   <div class="col">
                                     <button type="button" class="btn btn-warning btn-sm text-white rounded-0 border-0" style="height: 30px;" data-bs-toggle="modal" data-bs-target="#ubah<?= $row["id_testing"] ?>">
