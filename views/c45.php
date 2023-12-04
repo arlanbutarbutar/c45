@@ -77,7 +77,7 @@ class c45
 
         $target_count = $this->possible_values($data, $this->target);
 
-        if (count($target_count) == 4) { // jika hanya 1 kemungkinan, maka hasil sudah ditemukan
+        if (count($target_count) == 1) { // jika hanya 1 kemungkinan, maka hasil sudah ditemukan
             $this->dd("\n===Hasil Cabang <b>$attr_value</b>:" . key($target_count) . "===");
             $tree['value'] = key($target_count);
             $tree['next'] = array();

@@ -27,6 +27,9 @@ if (isset($_SESSION["time-message"])) {
 
 $baseURL = "http://$_SERVER[HTTP_HOST]/apps/data-mining-c45/";
 
+$select_image = "SELECT * FROM beranda";
+$views_image = mysqli_query($conn, $select_image);
+
 if (!isset($_SESSION["data-user"])) {
   if (isset($_POST["masuk"])) {
     if (masuk($_POST) > 0) {
@@ -229,6 +232,23 @@ if (isset($_SESSION["data-user"])) {
   if (isset($_POST["delete-all-latih"])) {
     if (delete_all_latih($_POST) > 0) {
       $_SESSION["message-success"] = "Semua data latih mahasiswa berhasil dihapus.";
+      $_SESSION["time-message"] = time();
+      header("Location: " . $_SESSION["page-url"]);
+      exit();
+    }
+  }
+
+  if (isset($_POST["tambah-beranda"])) {
+    if (tambah_beranda($_POST) > 0) {
+      $_SESSION["message-success"] = "File gambar berhasil diupload.";
+      $_SESSION["time-message"] = time();
+      header("Location: " . $_SESSION["page-url"]);
+      exit();
+    }
+  }
+  if (isset($_POST["hapus-beranda"])) {
+    if (hapus_beranda($_POST) > 0) {
+      $_SESSION["message-success"] = "File gambar berhasil dihapus.";
       $_SESSION["time-message"] = time();
       header("Location: " . $_SESSION["page-url"]);
       exit();

@@ -815,4 +815,52 @@ if (isset($_SESSION["data-user"])) {
     mysqli_query($conn, $sql);
     return mysqli_affected_rows($conn);
   }
+  function tambah_beranda($data)
+  {
+    global $conn;
+    if (isset($_FILES['images'])) {
+      $files = $_FILES['images'];
+      $upload_directory = "../assets/images/beranda/";
+
+      for ($i = 0; $i < count($files['name']); $i++) {
+        $file_name = $files['name'][$i];
+        $file_tmp = $files['tmp_name'][$i];
+        $file_size = $files['size'][$i];
+
+        if ($file_size > 2097152) {
+          $_SESSION['message-danger'] = "File size must be exactly 2 MB";
+          $_SESSION['time-message'] = time();
+          return false;
+        }
+
+        $fileName = str_replace(" ", "-", $file_name);
+        $fileName_encrypt = crc32($fileName);
+        $ekstensiGambar = explode('.', $fileName);
+        $ekstensiGambar = strtolower(end($ekstensiGambar));
+        $imageUploadPath = $upload_directory . $fileName_encrypt . "." . $ekstensiGambar;
+        $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
+        $allowTypes = array('jpg', 'png', 'jpeg');
+        if (in_array($fileType, $allowTypes)) {
+          compressImage($file_tmp, $imageUploadPath, 75);
+          $image = $fileName_encrypt . "." . $ekstensiGambar;
+          mysqli_query($conn, "INSERT INTO beranda(image) VALUES('$image')");
+        } else {
+          $_SESSION['message-danger'] = "Sorry, only JPG, JPEG and PNG image files are allowed.";
+          $_SESSION['time-message'] = time();
+          return false;
+        }
+      }
+    }
+    return mysqli_affected_rows($conn);
+  }
+  function hapus_beranda($data)
+  {
+    global $conn;
+    $id = htmlspecialchars(addslashes(trim(mysqli_real_escape_string($conn, $data['id']))));
+    $image = htmlspecialchars(addslashes(trim(mysqli_real_escape_string($conn, $data['image']))));
+    $path = "../assets/images/beranda/";
+    unlink($path . $image);
+    mysqli_query($conn, "DELETE FROM beranda WHERE id='$id'");
+    return mysqli_affected_rows($conn);
+  }
 }

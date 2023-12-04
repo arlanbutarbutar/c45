@@ -58,6 +58,15 @@
         <span class="menu-title">Laporan</span>
       </a>
     </li> -->
+    <?php }
+    if ($_SESSION['data-user']['role'] == 1) { ?>
+      <li class="nav-item nav-category">Lainnya</li>
+      <li class="nav-item">
+        <a class="nav-link" style="cursor: pointer;" onclick="window.location.href='img-beranda'">
+          <i class="mdi mdi-file-image menu-icon"></i>
+          <span class="menu-title">IMG Beranda</span>
+        </a>
+      </li>
     <?php } ?>
     <li class="nav-item nav-category"></li>
     <?php if ($_SESSION['data-user']['role'] == 0) { ?>

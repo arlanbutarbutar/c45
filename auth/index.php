@@ -74,36 +74,19 @@ $_SESSION["page-url"] = "./";
             <div class="col-md-12">
               <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner shadow">
-                  <div class="carousel-item active">
-                    <img src="../assets/images/1.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/2.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/3.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/4.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/5.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/6.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/7.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/8.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/9.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
-                  <div class="carousel-item">
-                    <img src="../assets/images/10.jpg" class="d-block w-100" style="height: 300px;object-fit: cover;" alt="...">
-                  </div>
+                  <?php
+                  if (mysqli_num_rows($views_image) > 0) {
+                    $isFirst = true;
+                    while ($row = mysqli_fetch_assoc($views_image)) {
+                  ?>
+                      <div class="carousel-item <?php echo $isFirst ? 'active' : ''; ?>">
+                        <img src="../assets/images/beranda/<?= $row['image'] ?>" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="...">
+                      </div>
+                  <?php
+                      $isFirst = false;
+                    }
+                  }
+                  ?>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>

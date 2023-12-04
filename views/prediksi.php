@@ -45,6 +45,7 @@ $_SESSION["page-url"] = "prediksi";
 
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
+                        <!-- collapsed -->
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#perhitungan" aria-expanded="false" aria-controls="perhitungan">
                           Perhitungan
                         </button>
@@ -191,6 +192,47 @@ $_SESSION["page-url"] = "prediksi";
                       </h2>
                       <div id="hasil-prediksi" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                         <div class="accordion-body table-responsive">
+                          <button type="button" class="btn btn-success btn-success rounded-0 text-white" data-bs-toggle="modal" data-bs-target="#export">
+                            <i class="bi bi-download"></i> Export
+                          </button>
+                          <div class="modal fade" id="export" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                <div class="modal-header border-bottom-0 shadow">
+                                  <h5 class="modal-title" id="exampleModalLabel">Export</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <div class="row">
+                                    <div class="col-lg-4">
+                                      <div class="card border-0 rounded-0">
+                                        <div class="card-body">
+                                          <h5 class="card-title">Lulus Tepat dan Tidak Tepat</h5>
+                                          <a href="export-lttt" class="btn btn-primary border-0 rounded-0 text-white" target="_blank">Export</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                      <div class="card border-0 rounded-0">
+                                        <div class="card-body">
+                                          <h5 class="card-title">Lulus Tepat</h5>
+                                          <a href="export-lt" class="btn btn-primary border-0 rounded-0 text-white" target="_blank">Export</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                      <div class="card border-0 rounded-0">
+                                        <div class="card-body">
+                                          <h5 class="card-title">Tidak Tepat</h5>
+                                          <a href="export-tt" class="btn btn-primary border-0 rounded-0 text-white" target="_blank">Export</a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                           <table class="table table-bordered table-striped table-hover table-sm display" id="datatable">
                             <thead>
                               <tr>
