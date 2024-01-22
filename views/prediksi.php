@@ -147,7 +147,7 @@ $_SESSION["page-url"] = "prediksi";
                               foreach ($statusIPK as $key_ipk => $row_ipk) : ?>
                                 <div class="mb-3">
                                   <label for="nilai_ipk" class="form-label">Nilai IPK <?= $row_ipk['status_ipk'] ?> <small class="text-danger">*</small></label>
-                                  <input type="number" step="0.01" min="0" name="nilai_ipk[]" value="<?php if (isset($_POST['nilai_ipk'][$key_ipk])) {
+                                  <input type="number" step="0.01" min="0" max="4" name="nilai_ipk[]" value="<?php if (isset($_POST['nilai_ipk'][$key_ipk])) {
                                                                                                         echo $_POST['nilai_ipk'][$key_ipk];
                                                                                                       } else {
                                                                                                         echo 0;
@@ -157,7 +157,7 @@ $_SESSION["page-url"] = "prediksi";
                               foreach ($statusSPA as $key_spa => $row_spa) : ?>
                                 <div class="mb-3">
                                   <label for="nilai_spa" class="form-label">Nilai SPA <?= $row_spa['status_spa'] ?> <small class="text-danger">*</small></label>
-                                  <input type="number" step="0.01" min="0" name="nilai_spa[]" value="<?php if (isset($_POST['nilai_spa'][$key_spa])) {
+                                  <input type="number" step="0.01" min="0" max="4" name="nilai_spa[]" value="<?php if (isset($_POST['nilai_spa'][$key_spa])) {
                                                                                                         echo $_POST['nilai_spa'][$key_spa];
                                                                                                       } else {
                                                                                                         echo 0;
@@ -282,31 +282,59 @@ $_SESSION["page-url"] = "prediksi";
                                                                     JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
                                                                     WHERE atribut_sub.atribut_sub='Lulus Tepat'
                                                           ");
-                          $tp = mysqli_num_rows($data_tp);
+                          if (mysqli_num_rows($data_tp) > 0) {
+                            $tp = mysqli_num_rows($data_tp);
+                          } else {
+                            $tp = 0;
+                          }
                           $data_tn = mysqli_query($conn, "SELECT * FROM atribut_sub 
                                                                     JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
                                                                     JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
                                                                     WHERE atribut_sub.atribut_sub='Tidak Tepat'
                                                           ");
-                          $tn = mysqli_num_rows($data_tn);
+                          if (mysqli_num_rows($data_tn) > 0) {
+                            $tn = mysqli_num_rows($data_tn);
+                          } else {
+                            $tn = 0;
+                          }
                           $data_fp = mysqli_query($conn, "SELECT * FROM atribut_sub 
                                                                     JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
                                                                     JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
                                                                     WHERE atribut_sub.atribut_sub='Lulus Tepat'
                                                                     AND atribut_sub.atribut_sub='D'
                                                           ");
-                          $fp = mysqli_num_rows($data_fp);
+                          if (mysqli_num_rows($data_fp) > 0) {
+                            $fp = mysqli_num_rows($data_fp);
+                          } else {
+                            $fp = 0;
+                          }
                           $data_fn = mysqli_query($conn, "SELECT * FROM atribut_sub 
                                                                     JOIN atribut_testing ON atribut_sub.id_atribut_sub=atribut_testing.id_atribut_sub 
                                                                     JOIN data_testing ON atribut_testing.id_testing=data_testing.id_testing 
                                                                     WHERE atribut_sub.atribut_sub='Tidak Tepat'
                                                                     AND atribut_sub.atribut_sub!='D'
                                                           ");
-                          $fn = mysqli_num_rows($data_fn);
+                          if (mysqli_num_rows($data_fn) > 0) {
+                            $fn = mysqli_num_rows($data_fn);
+                          } else {
+                            $fn = 0;
+                          }
 
-                          $akurasi = ($tp + $tn) / ($tp + $tn + $fp + $fn) * 100;
-                          $presisi = ($tp / ($fp + $tp)) * 100;
-                          $recall = ($tp / ($fn + $tp)) * 100;
+                          if ($tp + $tn + $fp + $fn != 0) {
+                            $akurasi = ($tp + $tn) / ($tp + $tn + $fp + $fn) * 100;
+                          } else {
+                            $akurasi = 0;
+                          }
+                          if ($fp + $tp != 0) {
+                            $presisi = ($tp / ($fp + $tp)) * 100;
+                          } else {
+                            $presisi = 0;
+                          }
+                          if ($fn + $tp != 0) {
+                            $recall = ($tp / ($fn + $tp)) * 100;
+                          } else {
+                            $recall = 0;
+                          }
 
                           echo "<strong>Akurasi:</strong> <br>(TP + TN) / (TP + TN + FP + FN) x 100% <br>";
                           echo "(" . $tp . " + " . $tn . ") / (" . $tp . " + " . $tn . " + " . $fp . " + " . $fn . ") x 100% <br>";

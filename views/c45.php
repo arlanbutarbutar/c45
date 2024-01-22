@@ -176,7 +176,7 @@ class c45
         foreach ($this->target_values as $key => $val) {
             $p[$key] = 0;
         }
-
+        
         foreach ($data as $val) {
             if ($attr == null) {
                 $p[$val[$this->target]]++;
@@ -184,7 +184,7 @@ class c45
                 $p[$val[$this->target]]++;
             }
         }
-
+        
         $p_total = array_sum($p);
         foreach ($p as $key => &$val) {
             $val /= $p_total;

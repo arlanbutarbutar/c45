@@ -52,7 +52,7 @@ $_SESSION["page-url"] = "data-testing";
                             <th scope="col" class="text-center" rowspan="2">#</th>
                             <th scope="col" class="text-center" rowspan="2">NIM</th>
                             <th scope="col" class="text-center" rowspan="2">Nama</th>
-                            <th scope="colgroup" class="text-center" colspan="4">IPK</th>
+                            <th scope="colgroup" class="text-center" colspan="7">IPK</th>
                             <th scope="colgroup" class="text-center" colspan="6">Nilai Matakuliah Studia Perancangan Arsitektur</th>
                             <th scope="col" class="text-center" rowspan="2">Nilai Rata-Rata IPK</th>
                             <th scope="col" class="text-center" rowspan="2">Nilai Rata-Rata SPA</th>
@@ -66,6 +66,9 @@ $_SESSION["page-url"] = "data-testing";
                             <th scope="col" class="text-center">2</th>
                             <th scope="col" class="text-center">3</th>
                             <th scope="col" class="text-center">4</th>
+                            <th scope="col" class="text-center">5</th>
+                            <th scope="col" class="text-center">6</th>
+                            <th scope="col" class="text-center">7</th>
                             <th scope="col" class="text-center">1</th>
                             <th scope="col" class="text-center">2</th>
                             <th scope="col" class="text-center">3</th>

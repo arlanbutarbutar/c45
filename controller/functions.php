@@ -188,13 +188,13 @@ if (isset($_SESSION["data-user"])) {
     $rata_rata = $total / $jumlah_data;
     return $rata_rata;
   }
-  function add_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atribut_sub, $conn)
+  function add_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atr, $id_atribut_sub, $conn)
   {
-    $sql = "INSERT INTO atribut_$tour(id_$tour,id_atribut_sub) VALUES('$id_latih','$id_atribut_sub');";
+    $sql = "INSERT INTO atribut_$tour(id_$tour,id_atribut,id_atribut_sub) VALUES('$id_latih','$id_atr','$id_atribut_sub');";
     $result = mysqli_multi_query($conn, $sql);
     return $result;
   }
-  function edit_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atribut_sub, $conn)
+  function edit_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atr, $id_atribut_sub, $conn)
   {
     $sql_delete = "DELETE FROM atribut_$tour WHERE id_$tour='$id_latih'";
     $result_delete = mysqli_query($conn, $sql_delete);
@@ -204,7 +204,7 @@ if (isset($_SESSION["data-user"])) {
       return false;
     }
 
-    $sql_insert = "INSERT INTO atribut_$tour(id_$tour,id_atribut_sub) VALUES('$id_latih','$id_atribut_sub')";
+    $sql_insert = "INSERT INTO atribut_$tour(id_$tour,id_atribut,id_atribut_sub) VALUES('$id_latih','$id_atr','$id_atribut_sub')";
     $result_insert = mysqli_query($conn, $sql_insert);
 
     // Periksa jika penambahan gagal
@@ -214,14 +214,14 @@ if (isset($_SESSION["data-user"])) {
 
     return true;
   }
-  function add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn)
+  function add_atribut_sub_other($tour, $id_latih, $id_atr, $atribut_sub, $conn)
   {
     $checkCukup = "SELECT * FROM atribut_sub WHERE atribut_sub='$atribut_sub'";
     $queryCukup = mysqli_query($conn, $checkCukup);
     if (mysqli_num_rows($queryCukup) > 0) {
       $row = mysqli_fetch_assoc($queryCukup);
       $id_atribut_sub = $row['id_atribut_sub'];
-      $sql = "INSERT INTO atribut_$tour(id_$tour,id_atribut_sub) VALUES('$id_latih','$id_atribut_sub')";
+      $sql = "INSERT INTO atribut_$tour(id_$tour,id_atribut,id_atribut_sub) VALUES('$id_latih','$id_atr','$id_atribut_sub')";
       $result = mysqli_query($conn, $sql);
     }
     return $result;
@@ -264,45 +264,45 @@ if (isset($_SESSION["data-user"])) {
     mysqli_query($conn, "INSERT INTO data_latih(id_latih,nim,nama,nilai_rata_rata_ipk,nilai_rata_rata_spa,nilai_rata_rata) VALUES('$id_latih','$nim','$nama','$nilai_rata_rata_ipk','$nilai_rata_rata_spa','$nilai_rata_rata')");
 
     // Menentukan jenis kelamin
-    add_atribut_sub_jenis_kelamin($tour, $id_latih, $id_jenis_kelamin, $conn);
+    add_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atr = 1, $id_jenis_kelamin, $conn);
 
     // Menentukan predikat ipk
-    if (round($nilai_rata_rata, 0) < 2) {
-      $atribut_sub = "Cukup";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata, 0) < 2.5) {
-      $atribut_sub = "Memuaskan";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_ipk = "Cukup";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
+      $atribut_ipk = "Memuaskan";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
     } else if (round($nilai_rata_rata, 0) < 3) {
-      $atribut_sub = "Sangat Memuaskan";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+      $atribut_ipk = "Sangat Memuaskan";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
     } else if (round($nilai_rata_rata, 0) >= 3) {
-      $atribut_sub = "Dengan Pujian";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+      $atribut_ipk = "Dengan Pujian";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
     }
 
     // Menentukan predikat spa
-    if (round($nilai_rata_rata, 0) < 2) {
-      $atribut_sub = "D";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata, 0) < 2.5) {
-      $atribut_sub = "C";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_spa = "D";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
+      $atribut_spa = "C";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
     } else if (round($nilai_rata_rata, 0) < 3) {
-      $atribut_sub = "B";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+      $atribut_spa = "B";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
     } else if (round($nilai_rata_rata, 0) >= 3) {
-      $atribut_sub = "A";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+      $atribut_spa = "A";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
     }
 
     // Menentukan prediksi
-    if (round($nilai_rata_rata, 0) < 2) {
-      $atribut_sub = "Tidak Tepat";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata, 0) >= 2) {
-      $atribut_sub = "Lulus Tepat";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_prediksi = "Tidak Tepat";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 4, $atribut_prediksi, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 2.5) {
+      $atribut_prediksi = "Lulus Tepat";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 4, $atribut_prediksi, $conn);
     }
 
     // menginput IPK dari data latih
@@ -352,45 +352,45 @@ if (isset($_SESSION["data-user"])) {
     $nilai_rata_rata = hitungRataRata($nilai_gabungan);
 
     // Menentukan jenis kelamin
-    edit_atribut_sub_jenis_kelamin($tour, $id_latih, $id_jenis_kelamin, $conn);
+    add_atribut_sub_jenis_kelamin($tour, $id_latih, $id_atr = 1, $id_jenis_kelamin, $conn);
 
     // Menentukan predikat ipk
-    if (round($nilai_rata_rata_ipk, 0) <= 1) {
-      $atribut_sub = "Cukup";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_ipk, 0) == 2) {
-      $atribut_sub = "Memuaskan";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_ipk, 0) == 3) {
-      $atribut_sub = "Sangat Memuaskan";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_ipk, 0) >= 4) {
-      $atribut_sub = "Dengan Pujian";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_ipk = "Cukup";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
+      $atribut_ipk = "Memuaskan";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) < 3) {
+      $atribut_ipk = "Sangat Memuaskan";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 3) {
+      $atribut_ipk = "Dengan Pujian";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 2, $atribut_ipk, $conn);
     }
 
-    // Menentukan predikat ipk
-    if (round($nilai_rata_rata_spa, 0) <= 1) {
-      $atribut_sub = "D";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_spa, 0) == 2) {
-      $atribut_sub = "C";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_spa, 0) == 3) {
-      $atribut_sub = "B";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_spa, 0) >= 4) {
-      $atribut_sub = "A";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+    // Menentukan predikat spa
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_spa = "D";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
+      $atribut_spa = "C";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) < 3) {
+      $atribut_spa = "B";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 3) {
+      $atribut_spa = "A";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 3, $atribut_spa, $conn);
     }
 
     // Menentukan prediksi
-    if (round($nilai_rata_rata, 0) < 2) {
-      $atribut_sub = "Tidak Tepat";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata, 0) >= 2) {
-      $atribut_sub = "Lulus Tepat";
-      add_atribut_sub_other($tour, $id_latih, $atribut_sub, $conn);
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_prediksi = "Tidak Tepat";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 4, $atribut_prediksi, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 2.5) {
+      $atribut_prediksi = "Lulus Tepat";
+      add_atribut_sub_other($tour, $id_latih, $id_atr = 4, $atribut_prediksi, $conn);
     }
 
     // menginput IPK dari data latih
@@ -449,36 +449,36 @@ if (isset($_SESSION["data-user"])) {
     $nilai_rata_rata = hitungRataRata($nilai_gabungan);
 
     // Menentukan jenis kelamin
-    edit_atribut_sub_jenis_kelamin($tour, $id_testing, $id_jenis_kelamin, $conn);
+    add_atribut_sub_jenis_kelamin($tour, $id_testing, $id_atr = 1, $id_jenis_kelamin, $conn);
 
     // Menentukan predikat ipk
-    if (round($nilai_rata_rata_ipk, 0) <= 1) {
-      $atribut_sub = "Cukup";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_ipk, 0) == 2) {
-      $atribut_sub = "Memuaskan";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_ipk, 0) == 3) {
-      $atribut_sub = "Sangat Memuaskan";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_ipk, 0) >= 4) {
-      $atribut_sub = "Dengan Pujian";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_ipk = "Cukup";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
+      $atribut_ipk = "Memuaskan";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) < 3) {
+      $atribut_ipk = "Sangat Memuaskan";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 3) {
+      $atribut_ipk = "Dengan Pujian";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
     }
 
-    // Menentukan predikat ipk
-    if (round($nilai_rata_rata_spa, 0) <= 1) {
-      $atribut_sub = "D";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_spa, 0) == 2) {
-      $atribut_sub = "C";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_spa, 0) == 3) {
-      $atribut_sub = "B";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
-    } else if (round($nilai_rata_rata_spa, 0) >= 4) {
-      $atribut_sub = "A";
-      add_atribut_sub_other($tour, $id_testing, $atribut_sub, $conn);
+    // Menentukan predikat spa
+    if (round($nilai_rata_rata, 0) < 2.5) {
+      $atribut_spa = "D";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
+      $atribut_spa = "C";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) < 3) {
+      $atribut_spa = "B";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 3) {
+      $atribut_spa = "A";
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
     }
 
     // menginput IPK dari data testing
@@ -530,8 +530,8 @@ if (isset($_SESSION["data-user"])) {
   function prediksiKelulusan($ipk, $spa)
   {
     // Atur ambang batas untuk prediksi
-    $batas_ipk = 2;
-    $batas_spa = 2;
+    $batas_ipk = 2.5;
+    $batas_spa = 2.5;
 
     // Lakukan prediksi
     if ($ipk >= $batas_ipk && $spa >= $batas_spa) {
@@ -578,45 +578,45 @@ if (isset($_SESSION["data-user"])) {
     mysqli_query($conn, "INSERT INTO data_testing(id_testing,nim,nama,nilai_rata_rata_ipk,nilai_rata_rata_spa,nilai_rata_rata) VALUES('$id_testing','$nim','$nama','$nilai_rata_rata_ipk','$nilai_rata_rata_spa','$nilai_rata_rata')");
 
     // Menentukan jenis kelamin
-    add_atribut_sub_jenis_kelamin($tour, $id_testing, $id_jenis_kelamin, $conn);
+    add_atribut_sub_jenis_kelamin($tour, $id_testing, $id_atr = 1, $id_jenis_kelamin, $conn);
 
     // Menentukan predikat ipk
-    if (round($nilai_rata_rata, 0) < 2) {
+    if (round($nilai_rata_rata, 0) < 2.5) {
       $atribut_ipk = "Cukup";
-      add_atribut_sub_other($tour, $id_testing, $atribut_ipk, $conn);
-    } else if (round($nilai_rata_rata, 0) < 2.5) {
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
       $atribut_ipk = "Memuaskan";
-      add_atribut_sub_other($tour, $id_testing, $atribut_ipk, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
     } else if (round($nilai_rata_rata, 0) < 3) {
       $atribut_ipk = "Sangat Memuaskan";
-      add_atribut_sub_other($tour, $id_testing, $atribut_ipk, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
     } else if (round($nilai_rata_rata, 0) >= 3) {
       $atribut_ipk = "Dengan Pujian";
-      add_atribut_sub_other($tour, $id_testing, $atribut_ipk, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 2, $atribut_ipk, $conn);
     }
 
     // Menentukan predikat spa
-    if (round($nilai_rata_rata, 0) < 2) {
+    if (round($nilai_rata_rata, 0) < 2.5) {
       $atribut_spa = "D";
-      add_atribut_sub_other($tour, $id_testing, $atribut_spa, $conn);
-    } else if (round($nilai_rata_rata, 0) < 2.5) {
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
+    } else if (round($nilai_rata_rata, 0) < 2.8) {
       $atribut_spa = "C";
-      add_atribut_sub_other($tour, $id_testing, $atribut_spa, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
     } else if (round($nilai_rata_rata, 0) < 3) {
       $atribut_spa = "B";
-      add_atribut_sub_other($tour, $id_testing, $atribut_spa, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
     } else if (round($nilai_rata_rata, 0) >= 3) {
       $atribut_spa = "A";
-      add_atribut_sub_other($tour, $id_testing, $atribut_spa, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 3, $atribut_spa, $conn);
     }
 
     // Menentukan prediksi
-    if (round($nilai_rata_rata, 0) < 2) {
+    if (round($nilai_rata_rata, 0) < 2.5) {
       $atribut_prediksi = "Tidak Tepat";
-      add_atribut_sub_other($tour, $id_testing, $atribut_prediksi, $conn);
-    } else if (round($nilai_rata_rata, 0) >= 2) {
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 4, $atribut_prediksi, $conn);
+    } else if (round($nilai_rata_rata, 0) >= 2.5) {
       $atribut_prediksi = "Lulus Tepat";
-      add_atribut_sub_other($tour, $id_testing, $atribut_prediksi, $conn);
+      add_atribut_sub_other($tour, $id_testing, $id_atr = 4, $atribut_prediksi, $conn);
     }
 
     // menginput IPK dari data testing
@@ -675,9 +675,9 @@ if (isset($_SESSION["data-user"])) {
   }
   function getPredikatIPK($nilai_rata_rata)
   {
-    if ($nilai_rata_rata < 2) {
+    if ($nilai_rata_rata < 2.5) {
       return "Cukup";
-    } elseif ($nilai_rata_rata < 2.5) {
+    } elseif ($nilai_rata_rata < 2.8) {
       return "Memuaskan";
     } elseif ($nilai_rata_rata < 3) {
       return "Sangat Memuaskan";
@@ -689,9 +689,9 @@ if (isset($_SESSION["data-user"])) {
   }
   function getPredikatSPA($nilai_rata_rata)
   {
-    if ($nilai_rata_rata < 2) {
+    if ($nilai_rata_rata < 2.5) {
       return "D";
-    } elseif ($nilai_rata_rata < 2.5) {
+    } elseif ($nilai_rata_rata < 2.8) {
       return "C";
     } elseif ($nilai_rata_rata < 3) {
       return "B";
@@ -703,9 +703,9 @@ if (isset($_SESSION["data-user"])) {
   }
   function getPrediksi($nilai_rata_rata)
   {
-    if ($nilai_rata_rata < 2) {
+    if ($nilai_rata_rata < 2.5) {
       return "Tidak Tepat";
-    } elseif ($nilai_rata_rata >= 2) {
+    } elseif ($nilai_rata_rata >= 2.5) {
       return "Lulus Tepat";
     }
 
@@ -757,13 +757,14 @@ if (isset($_SESSION["data-user"])) {
       // Mengambil ID terakhir dan menambahkannya
       $id_latih = getLastIdLatih($conn) + 1;
 
-      $nim = valid($worksheet->getCellByColumnAndRow(1, $row)->getValue());
-      $nama = valid($worksheet->getCellByColumnAndRow(2, $row)->getValue());
-      $id_jenis_kelamin = valid($worksheet->getCellByColumnAndRow(3, $row)->getValue());
+      $nim = valid($worksheet->getCell('A' . $row)->getValue());
+      $nama = valid($worksheet->getCell('B' . $row)->getValue());
+      $id_jenis_kelamin = valid($worksheet->getCell('C' . $row)->getValue());
+
 
       // Mengambil nilai IPK dan SPA dari sel-sel yang sesuai
-      $nilai_ipk = getNilai($worksheet, $row, 4, 7);
-      $nilai_spa = getNilai($worksheet, $row, 8, 13);
+      $nilai_ipk = getNilai($worksheet, $row, 4, 10);
+      $nilai_spa = getNilai($worksheet, $row, 11, 16);
 
       // Menghitung nilai rata-rata IPK dan SPA
       $nilai_rata_rata_ipk = hitungRataRata($nilai_ipk);
